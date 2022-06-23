@@ -55,14 +55,20 @@ class Canteen:
     meals: tuple[Meal]
 
     @property
+    def university_header(self):
+        return f'{self.university.name} {self.university.value * 3}'
+
+    @property
     def title(self):
-        return f'{self.university.name} {self.university.value * 3} {self.name}'
+        return f'{self.university_header} {self.name}'
 
     @property
     def report(self):
         meals_wo_pizza = tuple(filter(lambda m: not m.is_pizza, self.meals))
         vege_rate_wo_pizza = \
-            len(tuple(filter(lambda m: m.vege_status_mark == '💚', meals_wo_pizza))) / len(meals_wo_pizza)
+            len(tuple(filter(lambda m: m.vege_status_mark == '💚', meals_wo_pizza))) / len(meals_wo_pizza) \
+            if meals_wo_pizza else 0
+
         vege_rate_w_pizza = \
             len(tuple(filter(lambda m: m.vege_status_mark == '💚', self.meals))) / len(self.meals)
 

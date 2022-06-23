@@ -13,7 +13,7 @@ class InstagramExporter(BaseExporter):
 
         self._canteens = None
 
-    def generate(self, canteens: set[Canteen], meals: set[Meal], stats = None):
+    def generate_report(self, canteens: set[Canteen], meals: set[Meal], stats = None):
         self.export_image(all_meals=meals)
         self._canteens = canteens
 

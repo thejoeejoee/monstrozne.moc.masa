@@ -7,19 +7,28 @@ from canteens.types import Meal, Canteen
 
 
 class ConsoleExporter(BaseExporter):
-    def __init__(self, target: StringIO = sys.stdout, **kwargs):
+    def __init__(self, target: StringIO = sys.stdout, verbose=True, **kwargs):
         self._report_to = StringIO()
         self._target = target
+        self._verbose = verbose
         super().__init__()
 
-    def generate(self, canteens: set[Canteen], meals: set[Meal], stats=''):
-        print(f'⚠ {self.get_now_formatted()} ⚠️ \n️', file=self._report_to)
+    def generate_report(self, canteens: set[Canteen], meals: set[Meal], stats=''):
+        canteens = tuple(canteens)
+        if not canteens:
+            return
 
-        for c in canteens:
-            print(f"{c.title}\n{c.report}", file=self._report_to)
+        if self._verbose:
+            for c in canteens:
+                print(f"{c.title}\n{c.report}", file=self._report_to)
 
-        print(f'Masa z dnešní nabídky: {self.get_meal_ratio_formated(meals=meals)}', file=self._report_to, )
+        print(canteens[0].university_header, file=self._report_to, )
+        meals_count = len(meals)
+        print(f'Masa z dnešní nabídky: '
+              f'{self.get_meal_ratio_formated(meals=meals)} '
+              f'({meals_count - self.get_vege_meals_count(meals=meals)}/{meals_count})', file=self._report_to, )
         print(''.join(map(attrgetter('vege_status_mark'), meals)), file=self._report_to, )
+        print('', file=self._report_to, )
 
     def export(self):
         self._target.write(self._report_to.getvalue())

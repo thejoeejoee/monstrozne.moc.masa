@@ -13,6 +13,7 @@ IS_MEAT = re.compile(
     r'steak|'
     r'šunk|'
     r'ryb[aí]|'
+    r'tuňák|'
     r'losos|'
     r'masem|'  # uzeným masem
     r'vepř',

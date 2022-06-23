@@ -18,7 +18,7 @@ class BaseExporter(metaclass=ABCMeta):
     def __init__(self, *args, **kwargs):
         ...
 
-    def generate(self, canteens: set[Canteen], meals: set[Meal], stats):
+    def generate_report(self, canteens: set[Canteen], meals: set[Meal], stats):
         """Prepares data for posting."""
         ...
 
@@ -27,8 +27,12 @@ class BaseExporter(metaclass=ABCMeta):
         ...
 
     @classmethod
-    def get_vege_ratio(cls, all_meals: set[Meal]) -> float:
-        return len(tuple(filter(lambda m: m.vege_status_mark == '💚', all_meals))) / len(all_meals)
+    def get_vege_meals_count(cls, meals: set[Meal]):
+        return len(tuple(filter(lambda m: m.vege_status_mark == '💚', meals)))
+
+    @classmethod
+    def get_vege_ratio(cls, meals: set[Meal]) -> float:
+        return  cls.get_vege_meals_count(meals) / len(meals)
 
     @classmethod
     def get_meal_ratio_formated(self, vege_ratio: float = None, meals: set[Meal] = None):
@@ -42,7 +46,7 @@ class BaseExporter(metaclass=ABCMeta):
 
     @classmethod
     def export_image(cls, all_meals: set[Meal], output_path: Path = OUTPUT_FILE_PATH):
-        rate = cls.get_vege_ratio(all_meals=all_meals)
+        rate = cls.get_vege_ratio(meals=all_meals)
 
         red = Color("red")
         colors = list(red.range_to(Color("green"), 10))
