@@ -14,6 +14,10 @@ class ConsoleExporter(BaseExporter):
 
     def generate(self, canteens: set[Canteen], meals: set[Meal], stats=''):
         print(f'⚠ {self.get_now_formatted()} ⚠️ \n️', file=self._report_to)
+
+        for c in canteens:
+            print(f"{c.name}\n\n{c.report}", file=self._report_to)
+
         print(f'Masa z dnešní nabídky: {self.get_meal_ratio_formated(meals=meals)}', file=self._report_to, )
         print(''.join(map(attrgetter('vege_status_mark'), meals)), file=self._report_to, )
 
