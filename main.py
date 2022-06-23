@@ -17,7 +17,7 @@ from canteens.exporters.console import ConsoleExporter
 from canteens.exporters.instagram import InstagramExporter
 from canteens.reporters.vut import ReporterVUT
 
-from canteens.utils import coro
+from canteens.utils import native_coroutine
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -31,7 +31,7 @@ load_dotenv()
 @click.option('--ig-password')
 @click.option('--vut-api-url')
 @click.pass_context
-@coro
+@native_coroutine
 async def main(ctx: click.Context, **kwargs):
     vut = ReporterVUT(**ctx.params)
     canteens, all_meals = await vut.fetch()
