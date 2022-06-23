@@ -7,7 +7,7 @@ from canteens.types import Meal, Canteen
 
 
 class ConsoleExporter(BaseExporter):
-    def __init__(self, target: StringIO=sys.stdout, **kwargs):
+    def __init__(self, target: StringIO = sys.stdout, **kwargs):
         self._report_to = StringIO()
         self._target = target
         super().__init__()
@@ -16,7 +16,7 @@ class ConsoleExporter(BaseExporter):
         print(f'⚠ {self.get_now_formatted()} ⚠️ \n️', file=self._report_to)
 
         for c in canteens:
-            print(f"{c.name}\n\n{c.report}", file=self._report_to)
+            print(f"{c.title}\n{c.report}", file=self._report_to)
 
         print(f'Masa z dnešní nabídky: {self.get_meal_ratio_formated(meals=meals)}', file=self._report_to, )
         print(''.join(map(attrgetter('vege_status_mark'), meals)), file=self._report_to, )

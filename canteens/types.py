@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from _operator import attrgetter
+from enum import Enum
 
 from .decisions import IS_PIZZA, IS_MEAT, IS_NOT_MAIN_MEAL
 
@@ -42,10 +43,20 @@ class Meal:
             # f'{(" " + self.meat_part) if self.meat_part else ""}'
 
 
+class University(Enum):
+    VUT = '🟥'
+    MUNI = '🟦'
+    MENDELU = '🟩'
+
 @dataclasses.dataclass(frozen=True)
 class Canteen:
+    university: University
     name: str
     meals: tuple[Meal]
+
+    @property
+    def title(self):
+        return f'{self.university.name} {self.university.value * 3} {self.name}'
 
     @property
     def report(self):

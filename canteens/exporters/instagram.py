@@ -29,7 +29,7 @@ class InstagramExporter(BaseExporter):
         for c in self._canteens:
             ig_bot.media_comment(
                 media_id=media.id,
-                text=f"{c.name}\n\n{c.report}",
+                text=f"{c.title}\n\n{c.report}",
             )
 
         # https://adw0rd.github.io/instagrapi/usage-guide/story.html

@@ -1,6 +1,6 @@
 import requests
 
-from ..types import Meal, Canteen
+from ..types import Meal, Canteen, University
 from ..decisions import IS_NOT_MAIN_MEAL
 from .base import BaseReporter
 
@@ -52,7 +52,7 @@ class ReporterVUT(BaseReporter):
                 meals.append(meal)
                 all_meals.add(meal)
 
-            canteen = Canteen(canteen_name, tuple(meals))
+            canteen = Canteen(University.VUT, canteen_name, tuple(meals))
             all_canteens.add(canteen)
 
         return all_canteens, all_meals
