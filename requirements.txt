@@ -1,4 +1,7 @@
 click==8.1.2
-requests
-python-dotenv
-Pillow
+requests~=2.27.1
+python-dotenv~=0.20.0
+Pillow~=9.1.1
+
+colour~=0.1.5
+instagrapi~=1.16.19
