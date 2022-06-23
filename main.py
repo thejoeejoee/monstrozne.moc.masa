@@ -36,6 +36,8 @@ IS_MEAT = re.compile(
     r'steak|'
     r'šunk|'
     r'ryb[aí]|'
+    r'losos|'
+    r'masem|' # uzeným masem
     r'vepř',
     re.IGNORECASE | re.VERBOSE
 )
@@ -68,6 +70,10 @@ class Meal:
         for part in self.ingredients:
             if IS_MEAT.search(part):
                 return part
+
+        # sometimes ingredients are empty, so we need to check the name itself
+        if IS_MEAT.search(self.name):
+            return self.name
         return None
 
     def __post_init__(self):
@@ -80,7 +86,37 @@ class Meal:
     def __str__(self):
         return f'{self.meal_type_mark} {self.name} ' \
                f'{self.vege_status_mark}' \
-               f'{(" " + self.meat_part) if self.meat_part else ""}'
+               # f'{(" " + self.meat_part) if self.meat_part else ""}'
+
+
+
+@dataclasses.dataclass(frozen=True)
+class Canteen:
+    name: str
+    meals: list[Meal]
+
+
+    @property
+    def report(self):
+        meals_wo_pizza = tuple(filter(lambda m: not m.is_pizza, self.meals))
+        vege_rate_wo_pizza = \
+            len(tuple(filter(lambda m: m.vege_status_mark == '💚', meals_wo_pizza))) / len(meals_wo_pizza)
+        vege_rate_w_pizza = \
+            len(tuple(filter(lambda m: m.vege_status_mark == '💚', self.meals))) / len(self.meals)
+
+        meals = '\n'.join(str(m) for m in self.meals)
+
+        if len(meals_wo_pizza) != len(self.meals):
+            # pizzas
+            return f'{meals}\n' \
+                f'= Vege jídla kromě pizz: {vege_rate_wo_pizza * 100:.0f} %\n' \
+                f'= Vege jídla včetně pizz: {vege_rate_w_pizza * 100:.0f} %\n' \
+                f"= {''.join(map(attrgetter('meal_type_mark'), self.meals))}\n"
+
+        else:
+            return f'{meals}\n' \
+                f'= Vege jídla: {vege_rate_wo_pizza * 100:.0f} %\n' \
+                f"= {''.join(map(attrgetter('meal_type_mark'), self.meals))}\n"
 
 
 @click.command()
@@ -99,13 +135,14 @@ def main(vut_username, vut_password, api_url, ig_username, ig_password):
 
     reporter = StringIO()
     all_meals = set()
+    canteens = []
     print(f'⚠ {now_formatted} ⚠️ \n️', file=reporter)
     for canteen in response.json().get('data') or []:
         canteen_name = canteen.get('nazev')
         menu = canteen.get('menu') or []
         if not canteen_name or not menu or (len(menu) == 1 and not menu[0]):
             continue
-        print(canteen_name, file=reporter)
+
         meals = []
         for meal_data in menu:
             if 'Hl. jídlo' not in meal_data.get('typ', ''):
@@ -119,42 +156,21 @@ def main(vut_username, vut_password, api_url, ig_username, ig_password):
             ingredients = meal_data.get('slozeni')
 
             meal = Meal(name, frozenset(ingredients))
-            print('\t', meal, file=reporter)
             meals.append(meal)
             all_meals.add(meal)
 
-        meals_wo_pizza = tuple(filter(lambda m: not m.is_pizza, meals))
-        vege_rate_wo_pizza = \
-            len(tuple(filter(lambda m: m.vege_status_mark == '💚', meals_wo_pizza))) / len(meals_wo_pizza)
-        vege_rate_w_pizza = \
-            len(tuple(filter(lambda m: m.vege_status_mark == '💚', meals))) / len(meals)
+        canteen = Canteen(canteen_name, meals)
+        canteens.append(canteen)
 
-        if len(meals_wo_pizza) != len(meals):
-            # pizzas
-            print(
-                f'\t= Vege jídla kromě pizz: {vege_rate_wo_pizza * 100:.0f} %\n',
-                f'\t= Vege jídla včetně pizz: {vege_rate_w_pizza * 100:.0f} %\n',
-                f"\t= {''.join(map(attrgetter('meal_type_mark'), meals))}\n",
-                file=reporter,
-            )
-        else:
-            # no pizzas:
-            print(
-                f'\t= Vege jídla: {vege_rate_wo_pizza * 100:.0f} %\n',
-                f"\t= {''.join(map(attrgetter('meal_type_mark'), meals))}\n",
-                file=reporter,
-            )
-
-    print('\n⚠️⚠️⚠️', file=reporter, )
     rate = len(tuple(filter(lambda m: m.vege_status_mark == '💚', all_meals))) / len(all_meals)
-    rate_formatted = f'{rate * 100:.0f} %'
-    print(f'Vege jídel z dnešní nabídky: {rate_formatted}', file=reporter, )
+    rate_formatted = f'{(1. - rate) * 100:.0f} %'
+    print(f'Masa z dnešní nabídky: {rate_formatted}', file=reporter, )
     print(''.join(map(attrgetter('vege_status_mark'), all_meals)), file=reporter, )
 
     red = Color("red")
     colors = list(red.range_to(Color("green"), 10))
 
-    main_font = ImageFont.truetype("font.ttf", 256 + 128)
+    main_font = ImageFont.truetype("font.ttf", 512)
     output = Image.open('./template.png')
     width, height = output.size
     draw = ImageDraw.ImageDraw(output)
@@ -163,7 +179,7 @@ def main(vut_username, vut_password, api_url, ig_username, ig_password):
 
     # rate is 0..1
     # but 0.7 is fine for us --> complete green
-    nice_rate = 0.7
+    nice_rate = 0.5
     if rate > nice_rate:
         rate = 1
 
@@ -177,7 +193,7 @@ def main(vut_username, vut_password, api_url, ig_username, ig_password):
         font=main_font
     )
 
-    side_font = ImageFont.truetype("font.ttf", 72)
+    side_font = ImageFont.truetype("font.ttf", 72  + 36)
     draw.text(
         (width / 2, height - 96),
         now_formatted,
@@ -193,10 +209,17 @@ def main(vut_username, vut_password, api_url, ig_username, ig_password):
     ig_bot = Client()
     ig_bot.login(ig_username, ig_password)
 
-    ig_bot.photo_upload(
+    media = ig_bot.photo_upload(
         Path('output.jpg'),
-        caption=reporter.getvalue(),
+        caption=f'Dnešní report ⚠ {now_formatted}',
     )
+
+    for c in canteens:
+        ig_bot.media_comment(
+            media_id=media.id,
+            text=f"{c.name}\n\n{c.report}",
+        )
+
     # https://adw0rd.github.io/instagrapi/usage-guide/story.html
 
 
