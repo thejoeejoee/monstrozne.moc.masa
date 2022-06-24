@@ -7,12 +7,12 @@ from colour import Color
 
 from canteens.types import Canteen, Meal
 
-
 BASE_DIR = Path(__file__).parent
 
 FONT_PATH = (BASE_DIR / "font.ttf").as_posix()
 
 OUTPUT_FILE_PATH = BASE_DIR.parent.parent / 'output.jpg'
+
 
 class BaseExporter(metaclass=ABCMeta):
     def __init__(self, *args, **kwargs):
@@ -32,7 +32,7 @@ class BaseExporter(metaclass=ABCMeta):
 
     @classmethod
     def get_vege_ratio(cls, meals: set[Meal]) -> float:
-        return  cls.get_vege_meals_count(meals) / len(meals)
+        return cls.get_vege_meals_count(meals) / len(meals)
 
     @classmethod
     def get_meal_ratio_formated(self, vege_ratio: float = None, meals: set[Meal] = None):

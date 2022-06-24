@@ -52,7 +52,7 @@ class ReporterMUNI(BaseReporter):
             meals = []
             for meal_data in self.meals_from_relevant_groups(groups=groups):
                 meal_data = meal_data.get('item')
-                name = meal_data.get('mealName')
+                name = meal_data.get('mealName').replace(' ', ' ')
 
                 ingredients = map(str.strip, (meal_data.get('allergens') or '').split(','))
 

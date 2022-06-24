@@ -9,12 +9,12 @@ class ReporterVUT(BaseReporter):
     API_URL = "https://api.vut.cz/api/kamb/jidelnicek/v1"
 
     def __init__(self, vut_username, vut_password, vut_api_url, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._auth = (vut_username, vut_password)
-        self._api_url = vut_api_url or self.API_URL
 
     async def fetch(self):
         response = requests.get(
-            self._api_url,
+            self.API_URL,
             auth=self._auth,
         )
         response.raise_for_status()
