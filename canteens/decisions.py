@@ -26,6 +26,7 @@ IS_PIZZA = re.compile(
 )
 
 IS_NOT_MAIN_MEAL = re.compile(
-    r'bageta',
+    r'bageta|'
+    r'minutky',
     re.IGNORECASE | re.VERBOSE
 )

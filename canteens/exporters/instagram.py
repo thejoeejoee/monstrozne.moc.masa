@@ -13,17 +13,17 @@ class InstagramExporter(BaseExporter):
 
         self._canteens = None
 
-    def generate_report(self, canteens: set[Canteen], meals: set[Meal], stats = None):
+    def generate_report(self, canteens: set[Canteen], meals: set[Meal], stats=None):
         self.export_image(all_meals=meals)
         self._canteens = canteens
 
-    def export(self):
+    def export(self, ext_report=None):
         ig_bot = Client()
         ig_bot.login(*self._auth)
 
         media = ig_bot.photo_upload(
             OUTPUT_FILE_PATH,
-            caption=f'Dnešní report ⚠ {self.get_now_formatted()}',
+            caption=f'Dnešní report ⚠ {self.get_now_formatted()}\n{ext_report}',
         )
 
         for c in self._canteens:

@@ -1,5 +1,7 @@
 import datetime
+import logging
 import re
+from datetime import timedelta
 
 import requests
 
@@ -7,6 +9,7 @@ from ..types import Meal, Canteen, University
 from ..decisions import IS_NOT_MAIN_MEAL
 from .base import BaseReporter
 
+logger = logging.getLogger(__name__)
 
 class ReporterMUNI(BaseReporter):
     CANTEENS_API_URL = "https://kredit.skm.muni.cz/WebKredit/Api/Ordering/Ordering?CanteenId=30" \
@@ -24,12 +27,14 @@ class ReporterMUNI(BaseReporter):
     def meals_from_relevant_groups(cls, groups: list[dict]):
         for g in groups:
             if not cls.IS_RELEVANT_GROUP.search(g.get('mealKindName') or ''):
+                logger.debug('Skipping {}', g.get('mealKindName'))
                 continue
 
             yield from g.get('rows')
 
     async def fetch(self):
-        request_date = datetime.date.today().strftime('%Y-%m-%dT22:00:00.000Z')
+        today = datetime.date.today() - timedelta(days=1)
+        request_date = today.strftime('%Y-%m-%dT22:00:00.000Z')
 
         all_meals = set()
         all_canteens = set()
@@ -66,5 +71,8 @@ class ReporterMUNI(BaseReporter):
 
             canteen = Canteen(University.MUNI, canteen_data.get('name'), tuple(meals))
             all_canteens.add(canteen)
+
+        if not all_canteens:
+            logger.warning('Fetched no canteens.')
 
         return all_canteens, all_meals
