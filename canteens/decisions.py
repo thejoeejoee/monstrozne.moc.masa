@@ -15,7 +15,16 @@ IS_MEAT = re.compile(
     r'ryb[aí]|'
     r'tuňák|'
     r'losos|'
+    r'kančí|'
+    r'surimi|'
+    r'uzenina|'
+    r'kotlet|'
+    r'krůtí|'
+    r'vrabec|'
     r'masem|'  # uzeným masem
+    r'jelen|'
+    r'butterfish|'
+    r'filet|'
     r'vepř',
     re.IGNORECASE | re.VERBOSE
 )
