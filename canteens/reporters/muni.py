@@ -27,7 +27,7 @@ class ReporterMUNI(BaseReporter):
     def meals_from_relevant_groups(cls, groups: list[dict]):
         for g in groups:
             if not cls.IS_RELEVANT_GROUP.search(g.get('mealKindName') or ''):
-                logger.debug('Skipping {}', g.get('mealKindName'))
+                logger.debug('Skipping %s', g.get('mealKindName'))
                 continue
 
             yield from g.get('rows')

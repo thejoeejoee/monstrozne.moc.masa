@@ -76,7 +76,9 @@ class ReporterMENDELU(BaseReporter):
                 meals.add(meal)
                 all_meals.add(meal)
 
-            canteen_name = dom.select_one(f'a[href="#{canteen_tab_el.attrs.get("id")}"]').text
-            all_canteens.add(Canteen(University.MENDELU, canteen_name, tuple(meals)))
+            if meals:
+                # add onl cateens with som meals
+                canteen_name = dom.select_one(f'a[href="#{canteen_tab_el.attrs.get("id")}"]').text
+                all_canteens.add(Canteen(University.MENDELU, canteen_name, tuple(meals)))
 
         return all_canteens, all_meals
