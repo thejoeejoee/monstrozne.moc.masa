@@ -27,10 +27,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Execute script
-        with:
+        run: python main.py
+        env:
           __VUT_USERNAME: ${{ secrets.VUT_USERNAME }}
           __VUT_PASSWORD: ${{ secrets.VUT_PASSWORD }}
           __IG_USERNAME: ${{ secrets.IG_USERNAME }}
           __IG_PASSWORD: ${{ secrets.IG_PASSWORD }}
-        run: |
-          python main.py
