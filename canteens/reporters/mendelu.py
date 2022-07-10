@@ -22,7 +22,7 @@ class ReporterMENDELU(BaseReporter):
             response.raise_for_status()
         except HTTPError as e:
             logger.warning('Problem with fetching: %s', e)
-            return
+            raise
 
         content = response.text
 

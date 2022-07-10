@@ -6,6 +6,7 @@ from io import StringIO
 
 import click
 from dotenv import load_dotenv
+from requests import HTTPError
 
 from canteens.exporters.console import ConsoleExporter
 from canteens.exporters.instagram import InstagramExporter
@@ -35,7 +36,10 @@ async def main(ctx: click.Context, **kwargs):
     muni_canteens, muni_meals = await muni.fetch()
 
     mendelu = ReporterMENDELU(**ctx.params)
-    mendelu_canteens, mendelu_meals = await mendelu.fetch()
+    try:
+        mendelu_canteens, mendelu_meals = await mendelu.fetch()
+    except HTTPError:
+        mendelu_canteens, mendelu_meals = set(), set()
 
     console_verbose = ConsoleExporter(**ctx.params, verbose=True)
     brief = StringIO()
