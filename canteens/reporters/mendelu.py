@@ -1,23 +1,28 @@
 import datetime
+import logging
 import re
 from pathlib import Path
 
 import bs4 as bs4
 import requests
+from requests import HTTPError
 
 from ..types import Meal, Canteen, University
 from ..decisions import IS_NOT_MAIN_MEAL
 from .base import BaseReporter
 
+logger = logging.getLogger(__name__)
 
 class ReporterMENDELU(BaseReporter):
     CANTEENS_API_URL = "https://skm.mendelu.cz/stravovani/28603-jidelni-listek"
 
-    IS_NOT_MAIN_MEAL = re
-
     async def fetch(self):
         response = requests.get(self.CANTEENS_API_URL)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError as e:
+            logger.warning('Problem with fetching: %s', e)
+            return
 
         content = response.text
 
