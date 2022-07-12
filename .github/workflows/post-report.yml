@@ -2,8 +2,8 @@ name: Post canteen report
 
 on:
   schedule:
-    # 11:07 Monday--Friday
-    - cron: "7 11 * * 1-5"
+    # 11:07 Monday--Friday in CEST
+    - cron: "7 9 * * 1-5"
   workflow_dispatch:
 
 
