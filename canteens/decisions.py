@@ -22,6 +22,8 @@ IS_MEAT = re.compile(
     r'krůtí|'
     r'vrabec|'
     r'masem|'  # uzeným masem
+    r'uzen.{,4}mas|' # uzené maso
+    r'mlet.{,4}mas|' # mletý masem
     r'jelen|'
     r'butterfish|'
     r'filet|'
