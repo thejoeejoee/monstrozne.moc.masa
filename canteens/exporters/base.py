@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from zoneinfo import ZoneInfo
 from datetime import datetime
 from pathlib import Path
 
@@ -42,7 +43,7 @@ class BaseExporter(metaclass=ABCMeta):
 
     @classmethod
     def get_now_formatted(cls):
-        return datetime.now().strftime('%H:%M %d.%m.%Y')
+        return datetime.now().replace(tzinfo=ZoneInfo('Europe/Prague')).strftime('%H:%M %d.%m.%Y')
 
     @classmethod
     def export_image(cls, all_meals: set[Meal], output_path: Path = OUTPUT_FILE_PATH):
