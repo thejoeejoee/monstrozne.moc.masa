@@ -28,6 +28,7 @@ IS_MEAT = re.compile(
     r'butterfish|'
     r'filet|'
     r'drůbe|'
+    r'zvěřin|'
     r'krkov|' # definitely not
     r'vepř',
     re.IGNORECASE | re.VERBOSE
