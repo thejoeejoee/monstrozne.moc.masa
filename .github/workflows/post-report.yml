@@ -26,6 +26,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Set Europe/Prague TZ
+        uses: szenius/set-timezone@v1.0
+        with:
+          timezoneLinux: "Europe/Prague"
+
       - name: Execute script
         run: python main.py
         env:
