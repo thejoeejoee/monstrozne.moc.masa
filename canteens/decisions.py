@@ -6,7 +6,7 @@ IS_MEAT = re.compile(
     r'klobá|'
     r'salám|'
     r'gothaj|'
-    r'guláš|'  # probably questionable
+    r'guláš(?!.*(hlív|zelenin|vgtr))|'  # guláš not followed somewhere by hlív, zelenin or vgtr
     r'hově|'
     r'říz|'
     r'kachn|'
